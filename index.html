@@ -48,15 +48,38 @@
     }
     .nav a.bao { color: #C04F15; }
     .nav a.spruce { color: #215F9A; }
+
+    /* 彩虹文本及缩放动画 */
+    .rainbow {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 28px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      transform-origin: center center;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%   { transform: scale(1);   opacity: 0.85; }
+      50%  { transform: scale(1.25); opacity: 1; }
+      100% { transform: scale(1);   opacity: 0.85; }
+    }
   </style>
 </head>
 <body>
   <img class="logo" src="image002.png" alt="MSC Logo">
   <div class="title">MSC</div>
   <div class="nav">
-    <a href="Ini.html">首页</a>
-    <a href="bao.html" class="bao">背包</a>
-    <a href="https://www.spruce.town/" class="spruce">Spruce 社区</a>
+    <a href="Ini.html">关于</a>
+    <a href="bao.html" class="bao">整合包</a>
+    <a href="https://www.spruce.town/" class="spruce">我感觉好玩的服务器</a>
+  </div>
+  <div>
+    <span class="rainbow">Github太亥了</span>
   </div>
 </body>
 </html>
