@@ -49,7 +49,7 @@
     .nav a.bao { color: #C04F15; }
     .nav a.spruce { color: #215F9A; }
 
-    /* 彩虹文本：流动的渐变 + 更快的速度 + 左倾斜 22.5 度 + 缓进缓出放大缩小 */
+    /* 彩虹文本：流动的渐变 + 更快的速度 + 左倾斜 22.5 度 + 更快弹跳（pulse 0.8s） */
     .rainbow {
       display: inline-block;
       margin-top: 10px;
@@ -65,8 +65,8 @@
       transform-origin: center center;
       /* 基本为左倾斜 22.5 度 (逆时针) */
       transform: rotate(-22.5deg) scale(1);
-      /* 两个动画：一个用于背景流动（更快），另一个用于缓进缓出放大缩小 */
-      animation: flow 1.2s linear infinite, pulse 2s ease-in-out infinite;
+      /* 两个动画：一个用于背景流动（更快），另一个用于更快的弹跳（pulse 0.8s） */
+      animation: flow 1.2s linear infinite, pulse 0.8s ease-in-out infinite;
     }
 
     /* 背景流动动画：从左到右，循环 */
@@ -75,7 +75,7 @@
       100% { background-position: 100% 50%; }
     }
 
-    /* 缓进缓出放大缩小，同时保持旋转角度不变 */
+    /* 更快的弹跳周期（0.8s），保持旋转角度不变 */
     @keyframes pulse {
       0%   { transform: rotate(-22.5deg) scale(1);   opacity: 0.85; }
       50%  { transform: rotate(-22.5deg) scale(1.25); opacity: 1; }
