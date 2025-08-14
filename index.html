@@ -7,7 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Minecraft迷上城建</title>
   <style>
-    /* 更稳妥的中文字体回退顺序，兼容常见系统 */
     body {
       font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "WenQuanYi Micro Hei", Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -17,45 +16,20 @@
       padding: 0;
       text-align: center;
     }
-    .logo {
-      margin-top: 40px;
-      width: 400px;
-      height: auto;
-      max-width: 90vw;
-    }
-    .title {
-      color: #4E95D9;
-      font-size: 42px;
-      margin-top: 30px;
-      margin-bottom: 15px;
-      font-weight: bold;
-    }
-    .subtitle {
-      color: #4E95D9;
-      font-size: 22px;
-      margin-bottom: 30px;
-      font-weight: bold;
-    }
-    .nav {
-      margin: 30px auto;
-      font-size: 20px;
-    }
-    .nav a {
-      text-decoration: none;
-      margin: 0 20px;
-      color: #C00000;
-      font-weight: bold;
-    }
+    .logo { margin-top: 40px; width: 400px; height: auto; max-width: 90vw; }
+    .title { color: #4E95D9; font-size: 42px; margin-top: 30px; margin-bottom: 15px; font-weight: bold; }
+    .subtitle { color: #4E95D9; font-size: 22px; margin-bottom: 30px; font-weight: bold; }
+    .nav { margin: 30px auto; font-size: 20px; }
+    .nav a { text-decoration: none; margin: 0 20px; color: #C00000; font-weight: bold; }
     .nav a.bao { color: #C04F15; }
     .nav a.spruce { color: #215F9A; }
 
-    /* 彩虹文本：流动的渐变 + 更快的速度 + 左倾斜 22.5 度 + 更快弹跳（pulse 0.8s） */
+    /* 彩虹文本：流动渐变 + 左倾 -22.5deg + 非常快的弹跳（0.3s） */
     .rainbow {
       display: inline-block;
       margin-top: 10px;
       font-size: 28px;
       font-weight: bold;
-      /* 以线性渐变作为文字颜色的底图，并设置足够的背景尺寸以便流动 */
       background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff);
       background-size: 200% 100%;
       background-position: 0% 50%;
@@ -63,19 +37,15 @@
       background-clip: text;
       color: transparent;
       transform-origin: center center;
-      /* 基本为左倾斜 22.5 度 (逆时针) */
       transform: rotate(-22.5deg) scale(1);
-      /* 两个动画：一个用于背景流动（更快），另一个用于更快的弹跳（pulse 0.8s） */
-      animation: flow 1.2s linear infinite, pulse 0.8s ease-in-out infinite;
+      animation: flow 1.2s linear infinite, pulse 0.3s ease-in-out infinite;
     }
 
-    /* 背景流动动画：从左到右，循环 */
     @keyframes flow {
       0%   { background-position: 0% 50%; }
       100% { background-position: 100% 50%; }
     }
 
-    /* 更快的弹跳周期（0.8s），保持旋转角度不变 */
     @keyframes pulse {
       0%   { transform: rotate(-22.5deg) scale(1);   opacity: 0.85; }
       50%  { transform: rotate(-22.5deg) scale(1.25); opacity: 1; }
