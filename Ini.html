@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>关于-迷上城建</title>
+  <style>
+    :root{
+      --bg:#f6f7f9;
+      --panel:#ffffff;
+      --muted:#666;
+      --accent:#2563eb;
+      --border:#e6e9ef;
+      --radius:10px;
+      --sidebar-w:280px;
+      --dropdown-transition-duration: 640ms;
+      --dropdown-ease: cubic-bezier(.2,.9,.2,1);
+      --sub-item-stagger: 80ms;
+      --chev-rotate-duration: 320ms;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;}
+    body{background:var(--bg);color:#111}
+    .app{display:flex;height:100vh;min-height:480px}
+    .sidebar{width:var(--sidebar-w);background:var(--panel);border-right:1px solid var(--border);padding:12px;overflow:auto}
+    .content{flex:1;padding:16px;overflow:auto}
+    .search{margin-bottom:10px}
+    .search input{width:100%;padding:8px;border-radius:8px;border:1px solid var(--border)}
+    .nav-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+    .nav-item,.sub-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;color:inherit}
+    .nav-item:hover,.sub-item:hover{background:rgba(0,0,0,0.04)}
+    .nav-item.selected,.sub-item.selected{background:linear-gradient(90deg,rgba(37,99,235,0.06),rgba(37,99,235,0.03));border:1px solid rgba(37,99,235,0.08)}
+    .nav-icon{width:32px;height:32px;border-radius:6px;background:linear-gradient(180deg,#eef2ff,#f8fafc);display:inline-flex;align-items:center;justify-content:center;color:var(--accent);flex:0 0 32px}
+    .nav-title{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .dropdown{margin-top:6px}
+    .dropdown-toggle{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;user-select:none}
+    .chev{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);width:18px;height:18px;transition:transform var(--chev-rotate-duration) ease}
+    .dropdown.open .dropdown-toggle .chev{transform:rotate(90deg)}
+    .dropdown-list{
+      margin-left:8px;
+      margin-top:6px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-8px);
+      overflow: hidden;
+
+      transition:
+        max-height var(--dropdown-transition-duration) var(--dropdown-ease),
+        opacity 260ms ease,
+        transform 300ms var(--dropdown-ease);
+    }
+    .dropdown.open .dropdown-list{
+      max-height: 720px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .dropdown-list .sub-item{
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 360ms ease, transform 360ms ease;
+    }
+    .dropdown.open .dropdown-list .sub-item:nth-child(1){
+      transition-delay: calc(var(--sub-item-stagger) * 0);
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .dropdown.open .dropdown-list .sub-item:nth-child(2){
+      transition-delay: calc(var(--sub-item-stagger) * 1);
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .dropdown.open .dropdown-list .sub-item:nth-child(3){
+      transition-delay: calc(var(--sub-item-stagger) * 2);
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .dropdown.open .dropdown-list .sub-item:nth-child(4){
+      transition-delay: calc(var(--sub-item-stagger) * 3);
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .dropdown.open .dropdown-list .sub-item:nth-child(5){
+      transition-delay: calc(var(--sub-item-stagger) * 4);
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .detail{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px;min-height:160px}
+    .content-title{font-size:22px;margin:0 0 8px 0;color:#0f172a}
+    .content-body{min-height:60px}
+    .content-paragraph{margin:0 0 12px 0;color:#111;line-height:1.7;white-space:normal}
+    .info-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;color:#0b1220}
+    .info-icon{font-size:18px;margin-right:6px;color:#f59e0b;flex:0 0 20px}
+    .info-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+    .info-table th,.info-table td{border:1px solid var(--border);padding:8px;text-align:left;vertical-align:top}
+    .info-table th{background:#fafafa;color:#111}
+    .note{margin-top:12px;padding:12px;border-radius:8px;background:linear-gradient(90deg,#fff7ed,#fff1f2);border:1px solid rgba(249,115,22,0.12);color:#7c2d12}
+    .hidden-black{background:#000;color:#000;border-radius:4px;padding:2px 6px;cursor:default;transition:color .12s, background .12s;display:inline-block}
+    .hidden-black:hover,.hidden-black:focus{background:transparent;color:inherit;outline:2px solid rgba(37,99,235,0.08);outline-offset:2px}
+    .nav-item, .sub-item, .nav-title { color: #111 !important; }
+
+    @media (max-width:820px){ .sidebar{width:240px} }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="sidebar" id="sidebar" aria-label="侧边导航">
+      <div class="search">
+        <input id="search" placeholder="搜索（临时禁用）" aria-label="搜索"/>
+      </div>
+
+      <ul class="nav-list" id="navList">
+        <li class="nav-item" data-id="content-1" tabindex="0"><div class="nav-icon" aria-hidden="true">城</div><div class="nav-title">迷上城建</div></li>
+        <li class="nav-item" data-id="content-2" tabindex="0"><div class="nav-icon" aria-hidden="true">轨</div><div class="nav-title">迷上轨道交通</div></li>
+        <li class="nav-item" data-id="content-3" tabindex="0"><div class="nav-icon" aria-hidden="true">星</div><div class="nav-title">天河星制片厂</div></li>
+
+        <li class="dropdown" id="moreDropdown" aria-expanded="false">
+          <div class="dropdown-toggle" id="moreToggle" tabindex="0" role="button" aria-controls="moreList" aria-expanded="false">
+            <div class="nav-icon" aria-hidden="true">⋯</div>
+            <div class="nav-title">更多</div>
+            <div class="chev" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div class="dropdown-list" id="moreList" role="menu" aria-hidden="true">
+            <div class="sub-item" data-id="content-more-1" tabindex="0"><div class="nav-icon">福</div><div class="nav-title">福〇福咒</div></div>
+            <div class="sub-item" data-id="content-more-2" tabindex="0"><div class="nav-icon">奶</div><div class="nav-title">老马奶茶店</div></div>
+            <div class="sub-item" data-id="content-more-3" tabindex="0"><div class="nav-icon">火</div><div class="nav-title">爆辣火锅店</div></div>
+            <div class="sub-item" data-id="content-more-4" tabindex="0"><div class="nav-icon">机</div><div class="nav-title">几维印制机器</div></div>
+          </div>
+        </li>
+
+        <li class="nav-item" data-id="content-4" tabindex="0"><div class="nav-icon">彩</div><div class="nav-title">小彩蛋</div></li>
+      </ul>
+    </aside>
+
+    <main class="content" aria-live="polite">
+      <section class="detail" id="detail">
+        <div id="detailBody" class="content-body">
+          <p class="content-paragraph">点击一个查看详细信息（点击“迷上城建”会显示完整内容）。</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 模板 -->
+  <template id="content-1">
+    <article>
+      <h3 class="content-title">迷上城建</h3>
+
+      <p class="content-paragraph">
+        迷上城建始于2020，至今没有政府论，没有国家，没有政府，没有法律，随心自由是代表。
+      </p>
+
+      <div class="info-row" role="group" aria-label="提示">
+        <div class="info-icon" aria-hidden="true">💡</div>
+        <div style="flex:1;min-width:0">
+          <p class="content-paragraph" style="margin-bottom:6px;">
+            你知道吗：迷上城一开始叫大兴岭，中期叫迷上城，后期改名为迷上轨道交通。版本的变更原因如下：
+          </p>
+
+          <table class="info-table" role="table" aria-label="版本变更原因表">
+            <thead>
+              <tr>
+                <th>版本</th>
+                <th>变更原因</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>大兴岭</td>
+                <td>卡顿</td>
+              </tr>
+              <tr>
+                <td>迷上城</td>
+                <td>列车模型重叠无法修复</td>
+              </tr>
+              <tr>
+                <td>迷上轨道交通</td>
+                <td>Nan</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="note" role="note">
+            我其实之前创建过服务器，但不知道为什么打不开了 😢
+          </div>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <template id="content-2">
+    <article>
+      <h3 class="content-title">迷上轨道交通</h3>
+      <p class="content-paragraph">迷上轨道交通是迷上城建的分支，此分支主要是建设迷上城的海陆空交通，也帮助制作迷上城需要的3D模型。</p>
+      <div class="info-row">
+        <div class="info-icon" aria-hidden="true">💡</div>
+        <div style="flex:1;min-width:0">
+          <p class="content-paragraph">你知道吗：一开始迷上轨交是与大兴岭一体的，后来才发展成个体。</p>
+          <p class="content-paragraph" style="margin-top:6px;">
+            <span class="hidden-black" tabindex="0" role="note" aria-label="隐藏信息">我建车站的顺序是：第一个站大气，剩下的站啥也不是。而且我们的磁悬浮零百仅需0.7秒[Doge]</span>
+          </p>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <template id="content-3">
+    <article>
+      <h3 class="content-title">天河星制片厂</h3>
+
+      <p class="content-paragraph" style="font-size:16px;">
+        天河星制片厂是迷上城建的影像工作室，专注短片、微电影与后期剪辑制作 🎬。
+      </p>
+
+      <p class="content-paragraph" style="font-size:16px;">
+        我们与迷上城建团队紧密协作，从脚本与分镜到拍摄、配乐、调色与剪辑，全流程承接，将创意快速转化为成片 ✨。
+      </p>
+
+      <p class="content-paragraph" style="font-size:16px;">
+        擅长纪录式短片、剧情微电影与宣传片，提供专业技术与高效交付。欢迎投稿与合作，一起把迷上城的故事搬上屏幕 😊
+      </p>
+    </article>
+  </template>
+
+  <template id="content-4"><h3 class="content-title">小彩蛋</h3><p class="content-paragraph">（彩蛋内容）</p></template>
+  <template id="content-more-1"><h3 class="content-title">福〇福咒</h3><p class="content-paragraph">（空）</p></template>
+  <template id="content-more-2"><h3 class="content-title">老马奶茶店</h3><p class="content-paragraph">（空）</p></template>
+  <template id="content-more-3"><h3 class="content-title">爆辣火锅店</h3><p class="content-paragraph">（空）</p></template>
+  <template id="content-more-4"><h3 class="content-title">几维印制机器</h3><p class="content-paragraph">（空）</p></template>
+
+  <script>
+    (function(){
+      function $all(sel, ctx=document){ return Array.from((ctx||document).querySelectorAll(sel)); }
+      function $(sel, ctx=document){ return (ctx||document).querySelector(sel); }
+
+      // 清理旧的 inline 样式（防止之前调试遗留）
+      function cleanupInlineStyles(){
+        $all('.dropdown-list, .dropdown-list *').forEach(el=>{
+          el.style.maxHeight = '';
+          el.style.opacity = '';
+          el.style.transform = '';
+          el.style.transitionDelay = '';
+          el.style.display = '';
+        });
+        $all('.dropdown').forEach(dd=>{
+          dd.classList.remove('open');
+          const toggle = dd.querySelector('.dropdown-toggle');
+          if(toggle) toggle.setAttribute('aria-expanded','false');
+          const list = dd.querySelector('.dropdown-list');
+          if(list) list.setAttribute('aria-hidden','true');
+        });
+      }
+
+      function renderTemplate(id){
+        if(!id) return;
+        const tpl = document.getElementById(id);
+        const detailBody = $('#detailBody');
+        if(!detailBody) return;
+        if(tpl && tpl.content){
+          detailBody.innerHTML = '';
+          detailBody.appendChild(tpl.content.cloneNode(true));
+        } else {
+          detailBody.innerHTML = '<p class="content-paragraph">尚无内容</p>';
+        }
+      }
+
+      function setSelected(node){
+        $all('.nav-item, .sub-item').forEach(n=>n.classList.remove('selected'));
+        if(node) node.classList.add('selected');
+      }
+
+      function bindNav(){
+        $all('.nav-item').forEach(li=>{
+          li.onclick = function(){
+            renderTemplate(this.getAttribute('data-id'));
+            setSelected(this);
+          };
+          li.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); } };
+        });
+      }
+
+      function bindDropdown(){
+        const toggle = $('#moreToggle');
+        const dropdown = $('#moreDropdown');
+        const list = $('#moreList');
+        if(!toggle || !dropdown || !list) return;
+
+        toggle.onclick = function(){
+          const opening = !dropdown.classList.contains('open');
+
+          if(opening){
+            const fullH = list.scrollHeight;
+            list.style.maxHeight = fullH + 'px';
+            dropdown.classList.add('open');
+            toggle.setAttribute('aria-expanded','true');
+            list.setAttribute('aria-hidden','false');
+
+            const onEnd = function(ev){
+              if(ev.propertyName && ev.propertyName.toLowerCase().includes('max')){
+                list.style.maxHeight = '';
+                list.removeEventListener('transitionend', onEnd);
+              }
+            };
+            list.addEventListener('transitionend', onEnd);
+          } else {
+            const curH = list.scrollHeight;
+            list.style.maxHeight = curH + 'px';
+            void list.offsetHeight;
+            dropdown.classList.remove('open');
+            toggle.setAttribute('aria-expanded','false');
+            list.setAttribute('aria-hidden','true');
+            list.style.maxHeight = '0px';
+          }
+        };
+        toggle.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); } };
+
+        $all('#moreList .sub-item').forEach(si=>{
+          si.onclick = function(){
+            renderTemplate(this.getAttribute('data-id'));
+            setSelected(this);
+          };
+          si.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); } };
+        });
+      }
+
+      function init(){
+        try{
+          cleanupInlineStyles();
+          bindNav();
+          bindDropdown();
+        }catch(err){
+          console.error('init error', err);
+        }
+      }
+
+      if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+</html>
