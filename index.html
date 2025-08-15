@@ -51,6 +51,49 @@
       50%  { transform: rotate(-22.5deg) scale(1.25); opacity: 1; }
       100% { transform: rotate(-22.5deg) scale(1);   opacity: 0.85; }
     }
+
+    /* 播放按钮（浮在右下角，明显） */
+    #playBtn {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#4E95D9,#215F9A);
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 18px rgba(33,95,154,0.25);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    #playBtn[aria-pressed="true"]::after {
+      content: "⏸";
+      font-size: 18px;
+    }
+    #playBtn[aria-pressed="false"]::after {
+      content: "▶";
+      font-size: 18px;
+    }
+
+    /* 小提示文字 */
+    #playHint {
+      position: fixed;
+      right: 86px;
+      bottom: 26px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      font-size: 12px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      z-index: 1000;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -64,5 +107,72 @@
   <div>
     <span class="rainbow">Github太亥了</span>
   </div>
+
+  <!-- 使用用户提供的音乐外链（网易云外链），循环播放 -->
+  <audio id="bg-audio" src="https://music.163.com/song/media/outer/url?id=2726132854.mp3" loop preload="auto"></audio>
+
+  <!-- 播放/暂停按钮（用于手动启动或控制） -->
+  <button id="playBtn" aria-pressed="false" aria-label="播放或暂停音乐" title="播放 / 暂停"></button>
+  <div id="playHint" role="status">点击播放音乐（浏览器可能阻止自动播放）</div>
+
+  <script>
+    (function(){
+      const audio = document.getElementById('bg-audio');
+      const btn = document.getElementById('playBtn');
+      const hint = document.getElementById('playHint');
+
+      // 尝试在加载时自动播放（许多浏览器会阻止带声音的自动播放）
+      function tryAutoPlay(){
+        audio.play().then(() => {
+          // 自动播放成功
+          btn.setAttribute('aria-pressed', 'true');
+          hint.style.display = 'none';
+        }).catch((err) => {
+          // 自动播放被阻止或出错，显示提示，让用户点击启动
+          btn.setAttribute('aria-pressed', 'false');
+          hint.style.display = 'block';
+        });
+      }
+
+      // 切换播放
+      function togglePlay(){
+        if (audio.paused) {
+          audio.play().then(() => {
+            btn.setAttribute('aria-pressed','true');
+            hint.style.display = 'none';
+          }).catch(() => {
+            // 如果还是被拦截，保持按钮显示并提示
+            btn.setAttribute('aria-pressed','false');
+            hint.style.display = 'block';
+          });
+        } else {
+          audio.pause();
+          btn.setAttribute('aria-pressed','false');
+        }
+      }
+
+      // 初始尝试自动播放（页面 load 时）
+      window.addEventListener('load', tryAutoPlay);
+
+      // 用户点击按钮时切换
+      btn.addEventListener('click', (e) => {
+        togglePlay();
+      });
+
+      // 如果音频文件加载失败，给用户提示（例如文件不存在）
+      audio.addEventListener('error', function() {
+        hint.textContent = '音频加载失败，请检查外链或替换为仓库内的音频文件';
+        hint.style.display = 'block';
+      });
+
+      // 可选：按下空格键可暂停/播放（当页面焦点不是输入时）
+      window.addEventListener('keydown', function(e) {
+        if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          togglePlay();
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
