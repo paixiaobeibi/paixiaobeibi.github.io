@@ -234,118 +234,216 @@
   <template id="content-more-2"><h3 class="content-title">老马奶茶店</h3><p class="content-paragraph">（空）</p></template>
   <template id="content-more-3"><h3 class="content-title">爆辣火锅店</h3><p class="content-paragraph">（空）</p></template>
   <template id="content-more-4"><h3 class="content-title">几维印制机器</h3><p class="content-paragraph">（空）</p></template>
+<script>
+  (function(){
+    function $all(sel, ctx=document){ return Array.from((ctx||document).querySelectorAll(sel)); }
+    function $(sel, ctx=document){ return (ctx||document).querySelector(sel); }
 
-  <script>
-    (function(){
-      function $all(sel, ctx=document){ return Array.from((ctx||document).querySelectorAll(sel)); }
-      function $(sel, ctx=document){ return (ctx||document).querySelector(sel); }
+    // 清理旧的 inline 样式（防止之前调试遗留）
+    function cleanupInlineStyles(){
+      $all('.dropdown-list, .dropdown-list *').forEach(el=>{
+        el.style.maxHeight = '';
+        el.style.opacity = '';
+        el.style.transform = '';
+        el.style.transitionDelay = '';
+        el.style.display = '';
+      });
+      $all('.dropdown').forEach(dd=>{
+        dd.classList.remove('open');
+        const toggle = dd.querySelector('.dropdown-toggle');
+        if(toggle) toggle.setAttribute('aria-expanded','false');
+        const list = dd.querySelector('.dropdown-list');
+        if(list) list.setAttribute('aria-hidden','true');
+      });
+    }
 
-      // 清理旧的 inline 样式（防止之前调试遗留）
-      function cleanupInlineStyles(){
-        $all('.dropdown-list, .dropdown-list *').forEach(el=>{
-          el.style.maxHeight = '';
-          el.style.opacity = '';
-          el.style.transform = '';
-          el.style.transitionDelay = '';
-          el.style.display = '';
-        });
-        $all('.dropdown').forEach(dd=>{
-          dd.classList.remove('open');
-          const toggle = dd.querySelector('.dropdown-toggle');
-          if(toggle) toggle.setAttribute('aria-expanded','false');
-          const list = dd.querySelector('.dropdown-list');
-          if(list) list.setAttribute('aria-hidden','true');
-        });
-      }
-
-      function renderTemplate(id){
-        if(!id) return;
-        const tpl = document.getElementById(id);
-        const detailBody = $('#detailBody');
-        if(!detailBody) return;
-        if(tpl && tpl.content){
-          detailBody.innerHTML = '';
-          detailBody.appendChild(tpl.content.cloneNode(true));
-        } else {
-          detailBody.innerHTML = '<p class="content-paragraph">尚无内容</p>';
-        }
-      }
-
-      function setSelected(node){
-        $all('.nav-item, .sub-item').forEach(n=>n.classList.remove('selected'));
-        if(node) node.classList.add('selected');
-      }
-
-      function bindNav(){
-        $all('.nav-item').forEach(li=>{
-          li.onclick = function(){
-            renderTemplate(this.getAttribute('data-id'));
-            setSelected(this);
-          };
-          li.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); } };
-        });
-      }
-
-      function bindDropdown(){
-        const toggle = $('#moreToggle');
-        const dropdown = $('#moreDropdown');
-        const list = $('#moreList');
-        if(!toggle || !dropdown || !list) return;
-
-        toggle.onclick = function(){
-          const opening = !dropdown.classList.contains('open');
-
-          if(opening){
-            const fullH = list.scrollHeight;
-            list.style.maxHeight = fullH + 'px';
-            dropdown.classList.add('open');
-            toggle.setAttribute('aria-expanded','true');
-            list.setAttribute('aria-hidden','false');
-
-            const onEnd = function(ev){
-              if(ev.propertyName && ev.propertyName.toLowerCase().includes('max')){
-                list.style.maxHeight = '';
-                list.removeEventListener('transitionend', onEnd);
-              }
-            };
-            list.addEventListener('transitionend', onEnd);
-          } else {
-            const curH = list.scrollHeight;
-            list.style.maxHeight = curH + 'px';
-            void list.offsetHeight;
-            dropdown.classList.remove('open');
-            toggle.setAttribute('aria-expanded','false');
-            list.setAttribute('aria-hidden','true');
-            list.style.maxHeight = '0px';
-          }
-        };
-        toggle.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); } };
-
-        $all('#moreList .sub-item').forEach(si=>{
-          si.onclick = function(){
-            renderTemplate(this.getAttribute('data-id'));
-            setSelected(this);
-          };
-          si.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); } };
-        });
-      }
-
-      function init(){
-        try{
-          cleanupInlineStyles();
-          bindNav();
-          bindDropdown();
-        }catch(err){
-          console.error('init error', err);
-        }
-      }
-
-      if(document.readyState === 'loading'){
-        document.addEventListener('DOMContentLoaded', init);
+    function renderTemplate(id){
+      if(!id) return;
+      const tpl = document.getElementById(id);
+      const detailBody = $('#detailBody');
+      if(!detailBody) return;
+      if(tpl && tpl.content){
+        detailBody.innerHTML = '';
+        detailBody.appendChild(tpl.content.cloneNode(true));
       } else {
-        init();
+        detailBody.innerHTML = '<p class="content-paragraph">尚无内容</p>';
       }
-    })();
-  </script>
+    }
+
+    function setSelected(node){
+      $all('.nav-item, .sub-item').forEach(n=>n.classList.remove('selected'));
+      if(node) node.classList.add('selected');
+    }
+
+    function bindNav(){
+      $all('.nav-item').forEach(li=>{
+        li.onclick = function(){
+          renderTemplate(this.getAttribute('data-id'));
+          setSelected(this);
+        };
+        li.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); } };
+      });
+    }
+
+    function bindDropdown(){
+      const toggle = $('#moreToggle');
+      const dropdown = $('#moreDropdown');
+      const list = $('#moreList');
+      if(!toggle || !dropdown || !list) return;
+
+      toggle.onclick = function(){
+        const opening = !dropdown.classList.contains('open');
+
+        if(opening){
+          const fullH = list.scrollHeight;
+          list.style.maxHeight = fullH + 'px';
+          dropdown.classList.add('open');
+          toggle.setAttribute('aria-expanded','true');
+          list.setAttribute('aria-hidden','false');
+
+          const onEnd = function(ev){
+            if(ev.propertyName && ev.propertyName.toLowerCase().includes('max')){
+              list.style.maxHeight = '';
+              list.removeEventListener('transitionend', onEnd);
+            }
+          };
+          list.addEventListener('transitionend', onEnd);
+        } else {
+          const curH = list.scrollHeight;
+          list.style.maxHeight = curH + 'px';
+          void list.offsetHeight;
+          dropdown.classList.remove('open');
+          toggle.setAttribute('aria-expanded','false');
+          list.setAttribute('aria-hidden','true');
+          list.style.maxHeight = '0px';
+        }
+      };
+      toggle.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); } };
+
+      $all('#moreList .sub-item').forEach(si=>{
+        si.onclick = function(){
+          renderTemplate(this.getAttribute('data-id'));
+          setSelected(this);
+        };
+        si.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); } };
+      });
+    }
+
+    // 新增：绑定搜索功能
+    function bindSearch(){
+      const searchInput = $('#search');
+      const dropdown = $('#moreDropdown');
+      const toggle = $('#moreToggle');
+      const subItems = $all('#moreList .sub-item');
+
+      if(!searchInput) return;
+
+      function showAllAndCloseDropdown(){
+        $all('.nav-item, .sub-item').forEach(item => {
+          item.style.display = 'flex';
+        });
+        if(dropdown && dropdown.classList.contains('open') && toggle){
+          // 触发一次点击以收起（与页面原有动画一致）
+          toggle.click();
+        }
+      }
+
+      searchInput.addEventListener('input', function(){
+        const searchTerm = this.value.trim().toLowerCase();
+
+        // 如果为空，恢复全部显示并收起更多
+        if(searchTerm.length === 0){
+          showAllAndCloseDropdown();
+          return;
+        }
+
+        // 匹配并显示/隐藏普通 nav-item（不包括 "更多" 下拉本身）
+        $all('.nav-item').forEach(item => {
+          // 排除 "更多" 这个 dropdown 顶层元素（它是 .dropdown）
+          if(item.closest('.dropdown')) {
+            // 这个 nav-item 在 dropdown 内，不属于顶栏单项，忽略
+            return;
+          }
+          const title = item.querySelector('.nav-title');
+          if(title){
+            const text = title.textContent.toLowerCase();
+            item.style.display = text.includes(searchTerm) ? 'flex' : 'none';
+          }
+        });
+
+        // 匹配并显示/隐藏下拉内的子项
+        let anySubMatch = false;
+        subItems.forEach(si=>{
+          const title = si.querySelector('.nav-title');
+          if(title){
+            const text = title.textContent.toLowerCase();
+            if(text.includes(searchTerm)){
+              si.style.display = 'flex';
+              anySubMatch = true;
+            } else {
+              si.style.display = 'none';
+            }
+          }
+        });
+
+        // "更多" 顶层项是否匹配（比如用户搜 "更多" 或者 "更多" 的中文）
+        let moreTitleMatch = false;
+        if(toggle){
+          const moreTitle = toggle.querySelector('.nav-title');
+          if(moreTitle && moreTitle.textContent.toLowerCase().includes(searchTerm)){
+            moreTitleMatch = true;
+          }
+        }
+
+        // 如果下拉内有匹配项，打开更多；否则如果更多本身不匹配就收起
+        if(anySubMatch){
+          if(dropdown && !dropdown.classList.contains('open') && toggle){
+            toggle.click();
+          }
+        } else {
+          // 若无子项匹配且 "更多" 自身也不匹配，就隐藏整个更多项（让页面只显示匹配结果）
+          if(!moreTitleMatch){
+            if(toggle) toggle.style.display = 'none';
+            if(dropdown) dropdown.style.display = 'none';
+          } else {
+            // 更多自身匹配：显示更多但收起下拉内容
+            if(toggle) toggle.style.display = 'flex';
+            if(dropdown) dropdown.style.display = 'block';
+            if(dropdown && dropdown.classList.contains('open') && toggle){
+              toggle.click(); // 收起列表以便只显示更多标题（或必要时用户可展开）
+            }
+          }
+        }
+
+        // 另外，如果页面上有其他 nav 项都被隐藏（无匹配），可以考虑自动展开更多来展示子项，但上面逻辑已在 anySubMatch 时打开
+      });
+
+      // 支持 ESC 清空搜索
+      searchInput.addEventListener('keydown', function(e){
+        if(e.key === 'Escape'){
+          this.value = '';
+          this.dispatchEvent(new Event('input'));
+        }
+      });
+    }
+
+    function init(){
+      try{
+        cleanupInlineStyles();
+        bindNav();
+        bindDropdown();
+        bindSearch(); // 启用搜索
+      }catch(err){
+        console.error('init error', err);
+      }
+    }
+
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
 </body>
 </html>
