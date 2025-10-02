@@ -13,6 +13,7 @@
       --primary-dark: #215F9A;
       --accent: #C00000;
       --accent-alt: #C04F15;
+      --community: #2E8B57; /* 新增社区颜色 */
       --text: #333;
       --light-bg: #f8f9fa;
       --card-bg: #fff;
@@ -88,8 +89,8 @@
       color: var(--accent-alt);
     }
     
-    .nav-links a.spruce {
-      color: var(--primary-dark);
+    .nav-links a.community {
+      color: var(--community);
     }
     
     .mobile-menu-btn {
@@ -189,6 +190,14 @@
     
     .card-btn:hover {
       background-color: var(--primary-dark);
+    }
+    
+    .card-btn.community {
+      background-color: var(--community);
+    }
+    
+    .card-btn.community:hover {
+      background-color: #267449;
     }
     
     /* 特色部分 */
@@ -342,7 +351,7 @@
     <div class="nav-links" id="navLinks">
       <a href="Ini.html">关于</a>
       <a href="bao.html" class="bao">整合包</a>
-      <a href="https://www.spruce.town/" class="spruce">服务器</a>
+      <a href="dashu.html" class="community">社区</a>
     </div>
   </nav>
 
@@ -379,12 +388,12 @@
       
       <div class="card">
         <h2 class="card-title">
-          <i>🌲</i> 服务器推荐
+          <i>👥</i> 社区
         </h2>
         <p class="card-content">
-          发现我们推荐的优秀Minecraft服务器，包括特色玩法和活跃社区，让你找到志同道合的建筑伙伴。
+          加入我们的社区，与来自世界各地的Minecraft爱好者一起分享建筑创意、参与城建比赛和探索无限可能。
         </p>
-        <a href="https://www.spruce.town/" class="card-btn spruce">访问服务器</a>
+        <a href="dashu.html" class="card-btn community">加入社区</a>
       </div>
     </div>
 
