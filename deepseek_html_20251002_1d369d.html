@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>社区 - Minecraft迷上城建</title>
+  <style>
+    /* 基础样式 */
+    :root {
+      --primary: #4E95D9;
+      --primary-dark: #215F9A;
+      --accent: #C00000;
+      --accent-alt: #C04F15;
+      --community: #2E8B57;
+      --qq-channel: #FF6A00; /* QQ频道颜色 */
+      --text: #333;
+      --light-bg: #f8f9fa;
+      --card-bg: #fff;
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 12px;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: var(--light-bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    /* 顶部导航栏 */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 5%;
+      background-color: var(--card-bg);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .nav-logo img {
+      height: 40px;
+      width: auto;
+    }
+    
+    .nav-logo span {
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 24px;
+    }
+    
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(78, 149, 217, 0.1);
+      color: var(--primary);
+    }
+    
+    .nav-links a.bao {
+      color: var(--accent-alt);
+    }
+    
+    .nav-links a.community {
+      color: var(--community);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--primary);
+    }
+    
+    /* 主要内容区域 */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .page-title {
+      font-size: 42px;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+    
+    .page-subtitle {
+      font-size: 18px;
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    /* 社区卡片区域 */
+    .community-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 40px;
+      margin-bottom: 60px;
+    }
+    
+    .community-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: center;
+    }
+    
+    .community-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+    
+    .community-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    
+    .qq-icon {
+      color: #12B7F5;
+    }
+    
+    .qq-channel-icon {
+      color: var(--qq-channel);
+    }
+    
+    .wechat-icon {
+      color: #07C160;
+    }
+    
+    .community-title {
+      font-size: 26px;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+    
+    .community-description {
+      color: #555;
+      margin-bottom: 20px;
+    }
+    
+    .community-qr {
+      width: 200px;
+      height: 200px;
+      margin: 20px auto;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .community-qr img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .community-id {
+      background-color: #f0f8ff;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 18px;
+      font-weight: 500;
+      margin: 20px 0;
+      display: inline-block;
+      color: var(--primary-dark);
+    }
+    
+    .qq-channel-id {
+      background-color: #fff8f0;
+      color: var(--qq-channel);
+    }
+    
+    .empty-state {
+      background-color: #f9f9f9;
+      padding: 40px;
+      border-radius: 8px;
+      margin: 20px 0;
+      color: #888;
+    }
+    
+    /* 社区特色部分 */
+    .community-features {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 40px;
+      margin-bottom: 60px;
+    }
+    
+    .features-title {
+      font-size: 32px;
+      color: var(--primary);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+    
+    .feature-item {
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .feature-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+      color: var(--primary);
+    }
+    
+    .feature-title {
+      font-size: 20px;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+    
+    /* 彩虹文本 */
+    .rainbow {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 28px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8b00ff);
+      background-size: 200% 100%;
+      background-position: 0% 50%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      transform-origin: center center;
+      transform: rotate(-22.5deg) scale(1);
+      animation: flow 1.2s linear infinite, pulse 0.01s ease-in-out infinite;
+    }
+
+    @keyframes flow {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    @keyframes pulse {
+      0%   { transform: rotate(-22.5deg) scale(1);   opacity: 0.85; }
+      50%  { transform: rotate(-22.5deg) scale(1.25); opacity: 1; }
+      100% { transform: rotate(-22.5deg) scale(1);   opacity: 0.85; }
+    }
+
+    /* 播放按钮 */
+    #playBtn {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#4E95D9,#215F9A);
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 18px rgba(33,95,154,0.25);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    #playBtn[aria-pressed="true"]::after {
+      content: "⏸";
+      font-size: 18px;
+    }
+    #playBtn[aria-pressed="false"]::after {
+      content: "▶";
+      font-size: 18px;
+    }
+
+    /* 小提示文字 */
+    #playHint {
+      position: fixed;
+      right: 86px;
+      bottom: 26px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      font-size: 12px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      z-index: 1000;
+      display: none;
+    }
+    
+    /* 页脚 */
+    footer {
+      background-color: var(--primary-dark);
+      color: white;
+      padding: 40px 5%;
+      text-align: center;
+      margin-top: 60px;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--card-bg);
+        flex-direction: column;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        gap: 10px;
+      }
+      
+      .nav-links.active {
+        display: flex;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .page-title {
+        font-size: 36px;
+      }
+      
+      .community-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .community-qr {
+        width: 180px;
+        height: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      <img src="../image002.png" alt="MSC Logo">
+      <span>MSC</span>
+    </div>
+    
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+    
+    <div class="nav-links" id="navLinks">
+      <a href="Ini.html">关于</a>
+      <a href="bao.html" class="bao">整合包</a>
+      <a href="dashu.html" class="community">社区</a>
+    </div>
+  </nav>
+
+  <!-- 主要内容区域 -->
+  <div class="container">
+    <!-- 页面标题 -->
+    <section class="page-header">
+      <h1 class="page-title">加入我们的社区</h1>
+      <p class="page-subtitle">与来自世界各地的Minecraft爱好者一起分享建筑创意、参与城建比赛和探索无限可能</p>
+    </section>
+
+    <!-- 社区卡片区域 -->
+    <div class="community-grid">
+      <!-- QQ群卡片 -->
+      <div class="community-card">
+        <div class="community-icon qq-icon">💬</div>
+        <h2 class="community-title">QQ群</h2>
+        <p class="community-description">加入我们的QQ群，与社区成员实时交流，获取最新资源和活动信息</p>
+        
+        <div class="community-qr">
+          <img src="../qq.png" alt="QQ群二维码">
+        </div>
+        
+        <div class="community-id">群号: 1067368275</div>
+        
+        <p>扫描上方二维码或搜索群号加入我们</p>
+      </div>
+      
+      <!-- QQ频道卡片 -->
+      <div class="community-card">
+        <div class="community-icon qq-channel-icon">📢</div>
+        <h2 class="community-title">QQ频道</h2>
+        <p class="community-description">关注我们的QQ频道，获取最新公告、资源更新和社区动态</p>
+        
+        <div class="community-qr">
+          <img src="../pdma.png" alt="QQ频道二维码">
+        </div>
+        
+        <div class="community-id qq-channel-id">频道号: pd77013935</div>
+        
+        <p>扫描上方二维码或搜索频道号关注我们</p>
+      </div>
+      
+      <!-- 微信群卡片 -->
+      <div class="community-card">
+        <div class="community-icon wechat-icon">👥</div>
+        <h2 class="community-title">微信群</h2>
+        <p class="community-description">通过微信群与社区成员保持联系，分享建筑心得和游戏体验</p>
+        
+        <div class="empty-state">
+          <p>这里嘛也没有</p>
+          <p style="margin-top: 10px; font-size: 14px;">微信群信息暂未提供</p>
+        </div>
+        
+        <p style="margin-top: 20px;">请关注其他社区渠道获取最新信息</p>
+      </div>
+    </div>
+
+    <!-- 社区特色部分 -->
+    <section class="community-features">
+      <h2 class="features-title">社区特色</h2>
+      <p style="text-align: center; max-width: 800px; margin: 0 auto 30px;">我们的社区致力于为Minecraft城建爱好者提供最好的交流平台和资源支持</p>
+      
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🏗️</div>
+          <h3 class="feature-title">城建分享</h3>
+          <p>展示你的建筑作品，获取反馈和建议，提升建筑技巧</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">🎮</div>
+          <h3 class="feature-title">游戏交流</h3>
+          <p>与志同道合的玩家交流游戏心得，发现新的玩法和技巧</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">📦</div>
+          <h3 class="feature-title">资源分享</h3>
+          <p>获取最新的整合包、材质包和建筑蓝图资源</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">🏆</div>
+          <h3 class="feature-title">社区活动</h3>
+          <p>参与城建比赛、建筑挑战和社区聚会活动</p>
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 40px;">
+        <span class="rainbow">Github太亥了</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- 页脚 -->
+  <footer>
+    <div class="footer-content">
+      <p>© 2023 Minecraft迷上城建 | 保留所有权利</p>
+      <p style="margin-top: 10px; font-size: 14px; opacity: 0.8;">联系我们: example@msc.com</p>
+    </div>
+  </footer>
+
+  <!-- 使用用户提供的音乐外链（网易云外链），循环播放 -->
+  <audio id="bg-audio" src="https://music.163.com/song/media/outer/url?id=2726132854.mp3" loop preload="auto"></audio>
+
+  <!-- 播放/暂停按钮（用于手动启动或控制） -->
+  <button id="playBtn" aria-pressed="false" aria-label="播放或暂停音乐" title="播放 / 暂停"></button>
+  <div id="playHint" role="status">点击播放音乐（浏览器可能阻止自动播放）</div>
+
+  <script>
+    (function(){
+      const audio = document.getElementById('bg-audio');
+      const btn = document.getElementById('playBtn');
+      const hint = document.getElementById('playHint');
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const navLinks = document.getElementById('navLinks');
+
+      // 移动端菜单切换
+      mobileMenuBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
+
+      // 尝试在加载时自动播放（许多浏览器会阻止带声音的自动播放）
+      function tryAutoPlay(){
+        audio.play().then(() => {
+          // 自动播放成功
+          btn.setAttribute('aria-pressed', 'true');
+          hint.style.display = 'none';
+        }).catch((err) => {
+          // 自动播放被阻止或出错，显示提示，让用户点击启动
+          btn.setAttribute('aria-pressed', 'false');
+          hint.style.display = 'block';
+        });
+      }
+
+      // 切换播放
+      function togglePlay(){
+        if (audio.paused) {
+          audio.play().then(() => {
+            btn.setAttribute('aria-pressed','true');
+            hint.style.display = 'none';
+          }).catch(() => {
+            // 如果还是被拦截，保持按钮显示并提示
+            btn.setAttribute('aria-pressed','false');
+            hint.style.display = 'block';
+          });
+        } else {
+          audio.pause();
+          btn.setAttribute('aria-pressed','false');
+        }
+      }
+
+      // 初始尝试自动播放（页面 load 时）
+      window.addEventListener('load', tryAutoPlay);
+
+      // 用户点击按钮时切换
+      btn.addEventListener('click', (e) => {
+        togglePlay();
+      });
+
+      // 如果音频文件加载失败，给用户提示（例如文件不存在）
+      audio.addEventListener('error', function() {
+        hint.textContent = '音频加载失败，请检查外链或替换为仓库内的音频文件';
+        hint.style.display = 'block';
+      });
+
+      // 可选：按下空格键可暂停/播放（当页面焦点不是输入时）
+      window.addEventListener('keydown', function(e) {
+        if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          togglePlay();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
