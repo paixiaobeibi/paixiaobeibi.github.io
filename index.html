@@ -7,23 +7,206 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Minecraft迷上城建</title>
   <style>
-    body {
-      font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "WenQuanYi Micro Hei", Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      background: #fff;
+    /* 基础样式 */
+    :root {
+      --primary: #4E95D9;
+      --primary-dark: #215F9A;
+      --accent: #C00000;
+      --accent-alt: #C04F15;
+      --text: #333;
+      --light-bg: #f8f9fa;
+      --card-bg: #fff;
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 12px;
+    }
+    
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+    
+    body {
+      font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: var(--light-bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    /* 顶部导航栏 */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 5%;
+      background-color: var(--card-bg);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .nav-logo img {
+      height: 40px;
+      width: auto;
+    }
+    
+    .nav-logo span {
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 24px;
+    }
+    
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(78, 149, 217, 0.1);
+      color: var(--primary);
+    }
+    
+    .nav-links a.bao {
+      color: var(--accent-alt);
+    }
+    
+    .nav-links a.spruce {
+      color: var(--primary-dark);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--primary);
+    }
+    
+    /* 主要内容区域 */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    
+    .hero-logo {
+      width: 280px;
+      height: auto;
+      margin-bottom: 24px;
+    }
+    
+    .hero-title {
+      font-size: 48px;
+      color: var(--primary);
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+    
+    .hero-subtitle {
+      font-size: 20px;
+      color: var(--primary);
+      margin-bottom: 32px;
+      font-weight: 500;
+      max-width: 600px;
+    }
+    
+    /* 内容卡片 */
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+    
+    .card-title {
+      font-size: 22px;
+      color: var(--primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .card-title i {
+      font-size: 24px;
+    }
+    
+    .card-content {
+      color: #555;
+      margin-bottom: 20px;
+    }
+    
+    .card-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+    
+    .card-btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    /* 特色部分 */
+    .feature-section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 40px;
+      margin-bottom: 60px;
       text-align: center;
     }
-    .logo { margin-top: 40px; width: 400px; height: auto; max-width: 90vw; }
-    .title { color: #4E95D9; font-size: 42px; margin-top: 30px; margin-bottom: 15px; font-weight: bold; }
-    .subtitle { color: #4E95D9; font-size: 22px; margin-bottom: 30px; font-weight: bold; }
-    .nav { margin: 30px auto; font-size: 20px; }
-    .nav a { text-decoration: none; margin: 0 20px; color: #C00000; font-weight: bold; }
-    .nav a.bao { color: #C04F15; }
-    .nav a.spruce { color: #215F9A; }
-
+    
+    .section-title {
+      font-size: 32px;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+    
     /* 彩虹文本：流动渐变 + 左倾 -22.5deg + 非常快的弹跳（0.3s） */
     .rainbow {
       display: inline-block;
@@ -94,19 +277,135 @@
       z-index: 1000;
       display: none;
     }
+    
+    /* 页脚 */
+    footer {
+      background-color: var(--primary-dark);
+      color: white;
+      padding: 40px 5%;
+      text-align: center;
+      margin-top: 60px;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--card-bg);
+        flex-direction: column;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        gap: 10px;
+      }
+      
+      .nav-links.active {
+        display: flex;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .hero-title {
+        font-size: 36px;
+      }
+      
+      .hero-subtitle {
+        font-size: 18px;
+      }
+      
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <img class="logo" src="image002.png" alt="MSC Logo">
-  <div class="title">MSC</div>
-  <div class="nav">
-    <a href="Ini.html">关于</a>
-    <a href="bao.html" class="bao">整合包</a>
-    <a href="https://www.spruce.town/" class="spruce">我感觉好玩的服务器</a>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      <img src="image002.png" alt="MSC Logo">
+      <span>MSC</span>
+    </div>
+    
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+    
+    <div class="nav-links" id="navLinks">
+      <a href="Ini.html">关于</a>
+      <a href="bao.html" class="bao">整合包</a>
+      <a href="https://www.spruce.town/" class="spruce">服务器</a>
+    </div>
+  </nav>
+
+  <!-- 主要内容区域 -->
+  <div class="container">
+    <!-- 英雄区域 -->
+    <section class="hero">
+      <img class="hero-logo" src="image002.png" alt="MSC Logo">
+      <h1 class="hero-title">Minecraft迷上城建</h1>
+      <p class="hero-subtitle">探索无限创意，建造属于你的世界</p>
+    </section>
+
+    <!-- 内容卡片区域 -->
+    <div class="content-grid">
+      <div class="card">
+        <h2 class="card-title">
+          <i>📘</i> 关于我们
+        </h2>
+        <p class="card-content">
+          了解Minecraft迷上城建社区的起源、发展历程和我们的使命。我们致力于为Minecraft玩家提供最好的城建体验。
+        </p>
+        <a href="Ini.html" class="card-btn">了解更多</a>
+      </div>
+      
+      <div class="card">
+        <h2 class="card-title">
+          <i>📦</i> 整合包
+        </h2>
+        <p class="card-content">
+          探索我们精心制作的整合包，包含各种优化模组和建筑工具，让你的Minecraft城建体验更加流畅和有趣。
+        </p>
+        <a href="bao.html" class="card-btn bao">查看整合包</a>
+      </div>
+      
+      <div class="card">
+        <h2 class="card-title">
+          <i>🌲</i> 服务器推荐
+        </h2>
+        <p class="card-content">
+          发现我们推荐的优秀Minecraft服务器，包括特色玩法和活跃社区，让你找到志同道合的建筑伙伴。
+        </p>
+        <a href="https://www.spruce.town/" class="card-btn spruce">访问服务器</a>
+      </div>
+    </div>
+
+    <!-- 特色部分 -->
+    <section class="feature-section">
+      <h2 class="section-title">社区特色</h2>
+      <p>加入我们的社区，与来自世界各地的Minecraft爱好者一起分享建筑创意、参与城建比赛和探索无限可能。</p>
+      
+      <div style="margin-top: 30px;">
+        <span class="rainbow">Github太亥了</span>
+      </div>
+    </section>
   </div>
-  <div>
-    <span class="rainbow">Github太亥了</span>
-  </div>
+
+  <!-- 页脚 -->
+  <footer>
+    <div class="footer-content">
+      <p>© 2023 Minecraft迷上城建 | 保留所有权利</p>
+      <p style="margin-top: 10px; font-size: 14px; opacity: 0.8;">联系我们: example@msc.com</p>
+    </div>
+  </footer>
 
   <!-- 使用用户提供的音乐外链（网易云外链），循环播放 -->
   <audio id="bg-audio" src="https://music.163.com/song/media/outer/url?id=2726132854.mp3" loop preload="auto"></audio>
@@ -120,6 +419,13 @@
       const audio = document.getElementById('bg-audio');
       const btn = document.getElementById('playBtn');
       const hint = document.getElementById('playHint');
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const navLinks = document.getElementById('navLinks');
+
+      // 移动端菜单切换
+      mobileMenuBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
 
       // 尝试在加载时自动播放（许多浏览器会阻止带声音的自动播放）
       function tryAutoPlay(){
