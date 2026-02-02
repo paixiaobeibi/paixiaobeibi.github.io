@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身份信息生成器 - GitHub Pages版</title>
+    <style>
+        /* 保持之前的CSS样式不变 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .generate-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .result-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .result-section h2 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .value {
+            font-family: 'Courier New', monospace;
+            color: #333;
+        }
+
+        .database-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .database-section h2 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .record-count {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .records-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .record-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .record-id {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .record-gender {
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .export-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .export-btn:hover {
+            background: #218838;
+        }
+
+        .clear-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero {
+                padding: 60px 20px;
+            }
+            
+            .result-section,
+            .database-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 英雄区域 -->
+        <section class="hero">
+            <h1>身份信息生成器</h1>
+            <p>一键生成符合规范的身份信息，所有数据存储在浏览器本地，仅用于测试演示。</p>
+            <button id="generateBtn" class="generate-btn">
+                点击获取身份信息
+            </button>
+        </section>
+
+        <!-- 结果显示区域 -->
+        <section class="result-section" id="resultSection" style="display: none;">
+            <h2>生成的身份信息</h2>
+            <div class="info-card" id="infoCard">
+                <!-- 动态填充 -->
+            </div>
+            <div class="action-buttons">
+                <button id="saveBtn" class="action-btn export-btn">保存到本地</button>
+                <button id="newBtn" class="action-btn">生成新的</button>
+            </div>
+        </section>
+
+        <!-- 加载动画 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>正在生成数据...</p>
+        </div>
+
+        <!-- 数据库列表 -->
+        <section class="database-section">
+            <h2>已保存的身份记录</h2>
+            <div class="record-count">
+                共 <span id="recordCount">0</span> 条记录
+                <button id="clearAllBtn" class="action-btn clear-btn" style="margin-left: 20px; padding: 5px 15px;">清空所有</button>
+            </div>
+            <div class="records-container" id="recordsContainer">
+                <!-- 记录会动态加载到这里 -->
+            </div>
+            <div class="action-buttons">
+                <button id="exportAllBtn" class="action-btn export-btn">导出所有数据</button>
+                <button id="importBtn" class="action-btn">导入数据</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 生成符合规范的身份证号
+        function generateIdNumber() {
+            const areaCode = '101101'; // 固定地区码
+            
+            // 生成出生日期（1900年至今）
+            const currentYear = new Date().getFullYear();
+            const minYear = 1900;
+            const year = Math.floor(Math.random() * (currentYear - minYear + 1)) + minYear;
+            const month = Math.floor(Math.random() * 12) + 1;
+            const maxDay = new Date(year, month, 0).getDate();
+            const day = Math.floor(Math.random() * maxDay) + 1;
+            
+            const birthDate = `${year}${month.toString().padStart(2, '0')}${day.toString().padStart(2, '0')}`;
+            
+            // 随机数
+            const randomNum = Math.floor(Math.random() * 10);
+            
+            // 固定码
+            const fixedCode = '48';
+            
+            // 性别码（男偶女奇）
+            const isMale = Math.random() > 0.5;
+            const genderCode = isMale ? 
+                Math.floor(Math.random() * 5) * 2 : // 生成偶数 0,2,4,6,8
+                Math.floor(Math.random() * 5) * 2 + 1; // 生成奇数 1,3,5,7,9
+            
+            // 最后一位校验码（简单实现）
+            const checkCode = Math.floor(Math.random() * 10);
+            
+            return {
+                idNumber: areaCode + birthDate + randomNum + fixedCode + genderCode + checkCode,
+                birthDate: `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+                age: currentYear - year,
+                gender: isMale ? '男' : '女',
+                createdAt: new Date().toISOString()
+            };
+        }
+
+        // 本地存储操作类
+        class IdentityStorage {
+            constructor() {
+                this.STORAGE_KEY = 'identity_records';
+                this.records = this.loadRecords();
+            }
+
+            loadRecords() {
+                const data = localStorage.getItem(this.STORAGE_KEY);
+                return data ? JSON.parse(data) : [];
+            }
+
+            saveRecords() {
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.records));
+                this.updateRecordCount();
+            }
+
+            addRecord(record) {
+                // 生成唯一ID
+                record.id = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                this.records.push(record);
+                this.saveRecords();
+                return record;
+            }
+
+            getAllRecords() {
+                return [...this.records].reverse(); // 最新记录在前
+            }
+
+            clearAllRecords() {
+                this.records = [];
+                this.saveRecords();
+            }
+
+            updateRecordCount() {
+                document.getElementById('recordCount').textContent = this.records.length;
+            }
+
+            exportRecords() {
+                const dataStr = JSON.stringify(this.records, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                const exportFileDefaultName = `身份记录_${new Date().toLocaleDateString()}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+            }
+
+            importRecords(jsonData) {
+                try {
+                    const imported = JSON.parse(jsonData);
+                    if (Array.isArray(imported)) {
+                        // 合并记录，避免重复
+                        imported.forEach(record => {
+                            if (!this.records.some(r => r.idNumber === record.idNumber)) {
+                                this.records.push(record);
+                            }
+                        });
+                        this.saveRecords();
+                        return true;
+                    }
+                    return false;
+                } catch (e) {
+                    console.error('导入失败:', e);
+                    return false;
+                }
+            }
+        }
+
+        // 初始化存储
+        const storage = new IdentityStorage();
+
+        // 显示生成结果
+        function displayResult(data) {
+            const infoCard = document.getElementById('infoCard');
+            const formattedDate = formatDate(data.birthDate);
+            
+            infoCard.innerHTML = `
+                <div class="info-item">
+                    <span class="label">性别：</span>
+                    <span class="value">${data.gender}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">年龄：</span>
+                    <span class="value">${data.age} 岁</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">出生日期：</span>
+                    <span class="value">${formattedDate}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">身份证号：</span>
+                    <span class="value" style="color: #e74c3c; font-weight: bold;">${data.idNumber}</span>
+                </div>
+            `;
+        }
+
+        // 显示记录列表
+        function displayRecords() {
+            const records = storage.getAllRecords();
+            const container = document.getElementById('recordsContainer');
+            
+            if (records.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">暂无记录，点击上方按钮生成第一条记录</p>';
+                return;
+            }
+            
+            container.innerHTML = records.map(record => `
+                <div class="record-item">
+                    <div class="record-header">
+                        <span class="record-id">${record.idNumber}</span>
+                        <span class="record-gender">${record.gender}</span>
+                    </div>
+                    <div style="color: #666; font-size: 0.9rem;">
+                        年龄: ${record.age}岁 | 出生日期: ${formatDate(record.birthDate)}
+                    </div>
+                    <div style="color: #999; font-size: 0.8rem; margin-top: 8px;">
+                        生成时间: ${new Date(record.createdAt).toLocaleString()}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 格式化日期
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        }
+
+        // 事件监听
+        document.addEventListener('DOMContentLoaded', () => {
+            storage.updateRecordCount();
+            displayRecords();
+        });
+
+        // 生成按钮点击事件
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const btn = this;
+            const loading = document.getElementById('loading');
+            const resultSection = document.getElementById('resultSection');
+            
+            // 显示加载动画
+            loading.style.display = 'block';
+            resultSection.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = '生成中...';
+
+            // 模拟生成延迟
+            setTimeout(() => {
+                const identity = generateIdNumber();
+                
+                // 显示结果
+                displayResult(identity);
+                resultSection.style.display = 'block';
+                
+                // 隐藏加载动画
+                loading.style.display = 'none';
+                btn.disabled = false;
+                btn.textContent = '点击获取身份信息';
+            }, 800);
+        });
+
+        // 保存按钮
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            const infoCard = document.getElementById('infoCard');
+            const items = infoCard.querySelectorAll('.info-item');
+            
+            if (items.length === 0) return;
+            
+            const record = {
+                gender: items[0].querySelector('.value').textContent,
+                age: parseInt(items[1].querySelector('.value').textContent),
+                idNumber: items[3].querySelector('.value').textContent,
+                birthDate: items[2].querySelector('.value').textContent.replace(/\//g, '-'),
+                createdAt: new Date().toISOString()
+            };
+            
+            storage.addRecord(record);
+            displayRecords();
+            alert('保存成功！');
+        });
+
+        // 生成新按钮
+        document.getElementById('newBtn').addEventListener('click', () => {
+            document.getElementById('generateBtn').click();
+        });
+
+        // 清空所有按钮
+        document.getElementById('clearAllBtn').addEventListener('click', () => {
+            if (confirm('确定要清空所有记录吗？此操作不可恢复！')) {
+                storage.clearAllRecords();
+                displayRecords();
+            }
+        });
+
+        // 导出所有按钮
+        document.getElementById('exportAllBtn').addEventListener('click', () => {
+            storage.exportRecords();
+        });
+
+        // 导入按钮
+        document.getElementById('importBtn').addEventListener('click', () => {
+            document.getElementById('importFile').click();
+        });
+
+        // 文件导入
+        document.getElementById('importFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                if (storage.importRecords(event.target.result)) {
+                    alert('导入成功！');
+                    displayRecords();
+                } else {
+                    alert('导入失败，请检查文件格式');
+                }
+            };
+            reader.readAsText(file);
+            
+            // 重置文件输入
+            e.target.value = '';
+        });
+    </script>
+</body>
+</html>
