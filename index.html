@@ -13,7 +13,8 @@
       --primary-dark: #215F9A;
       --accent: #C00000;
       --accent-alt: #C04F15;
-      --community: #2E8B57; /* 新增社区颜色 */
+      --community: #2E8B57;
+      --identity: #9C27B0; /* 新增身份卡颜色 */
       --text: #333;
       --light-bg: #f8f9fa;
       --card-bg: #fff;
@@ -93,6 +94,10 @@
       color: var(--community);
     }
     
+    .nav-links a.sfz {
+      color: var(--identity);
+    }
+    
     .mobile-menu-btn {
       display: none;
       background: none;
@@ -152,11 +157,31 @@
       box-shadow: var(--shadow);
       padding: 30px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
     
     .card:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+    
+    /* 身份卡片特殊样式 */
+    .card.identity-card {
+      border-top: 4px solid var(--identity);
+      background: linear-gradient(135deg, #f8f5ff 0%, #f0e8ff 100%);
+    }
+    
+    .card.identity-card::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 80px;
+      height: 80px;
+      background-color: var(--identity);
+      opacity: 0.1;
+      border-radius: 50%;
     }
     
     .card-title {
@@ -168,6 +193,10 @@
       gap: 10px;
     }
     
+    .identity-card .card-title {
+      color: var(--identity);
+    }
+    
     .card-title i {
       font-size: 24px;
     }
@@ -175,6 +204,10 @@
     .card-content {
       color: #555;
       margin-bottom: 20px;
+    }
+    
+    .identity-card .card-content {
+      color: #5e5e5e;
     }
     
     .card-btn {
@@ -185,11 +218,12 @@
       text-decoration: none;
       border-radius: 6px;
       font-weight: 500;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
     
     .card-btn:hover {
       background-color: var(--primary-dark);
+      transform: scale(1.05);
     }
     
     .card-btn.community {
@@ -198,6 +232,15 @@
     
     .card-btn.community:hover {
       background-color: #267449;
+    }
+    
+    .card-btn.identity {
+      background-color: var(--identity);
+    }
+    
+    .card-btn.identity:hover {
+      background-color: #7B1FA2;
+      background: linear-gradient(135deg, var(--identity) 0%, #7B1FA2 100%);
     }
     
     /* 特色部分 */
@@ -352,6 +395,7 @@
       <a href="Ini.html">关于</a>
       <a href="bao.html" class="bao">整合包</a>
       <a href="dashu.html" class="community">社区</a>
+      <a href="sfz.html" class="sfz">身份卡</a> <!-- 新增导航项 -->
     </div>
   </nav>
 
@@ -394,6 +438,17 @@
           加入我们的社区，与来自世界各地的Minecraft爱好者一起分享建筑创意、参与城建比赛和探索无限可能。
         </p>
         <a href="dashu.html" class="card-btn community">加入社区</a>
+      </div>
+      
+      <!-- 新增的身份卡片 -->
+      <div class="card identity-card">
+        <h2 class="card-title">
+          <i>🪪</i> 创建身份卡
+        </h2>
+        <p class="card-content">
+          创建属于你自己的个性化身份卡片，展示你在Minecraft迷上城建社区中的独特身份和成就。自定义你的角色信息、建筑风格和专长领域。
+        </p>
+        <a href="sfz.html" class="card-btn identity">创建身份卡</a>
       </div>
     </div>
 
