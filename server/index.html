@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <title>图片下方滑出菜单 + 底部页脚</title>
+    <style>
+        /* ---------- 全局重置 ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f5;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        /* ---------- 图片容器 ---------- */
+        .img-container {
+            position: relative;
+            width: 100%;
+        }
+        .img-container img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* ---------- 汉堡按钮（毛玻璃） ---------- */
+        .menu-wrap {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            z-index: 20;
+        }
+        .menu-btn {
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            position: relative;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
+            transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.40);
+            transform: scale(1.06);
+            box-shadow: 0 6px 28px rgba(0, 0, 0, 0.15);
+        }
+        .menu-btn:active {
+            transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.50);
+        }
+        .menu-btn span {
+            position: absolute;
+            left: 50%;
+            width: 20px;
+            height: 2.5px;
+            background: #1a1a1a;
+            border-radius: 2px;
+            transform: translateX(-50%);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .menu-btn span:nth-child(1) { top: 13px; }
+        .menu-btn span:nth-child(2) { top: 20.5px; }
+        .menu-btn span:nth-child(3) { top: 28px; }
+        .menu-btn.active span:nth-child(1) {
+            top: 20.5px;
+            transform: translateX(-50%) rotate(45deg);
+        }
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-50%) scaleX(0);
+        }
+        .menu-btn.active span:nth-child(3) {
+            top: 20.5px;
+            transform: translateX(-50%) rotate(-45deg);
+        }
+
+        /* ---------- 下拉菜单 ---------- */
+        .dropdown-wrap {
+            width: 100%;
+            max-height: 0;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: max-height 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .dropdown-wrap.open {
+            max-height: 600px;
+        }
+        .dropdown-menu {
+            width: 100%;
+            background: #ffffff;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        .dropdown-menu a {
+            display: block;
+            color: #1a1a1a;
+            text-decoration: none;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 450;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.15s, padding-left 0.2s;
+            line-height: 1.5;
+        }
+        .dropdown-menu a:last-child { border-bottom: none; }
+        .dropdown-menu a:hover {
+            background: #f5f7fa;
+            padding-left: 28px;
+        }
+        .dropdown-menu a::before {
+            content: "›";
+            display: inline-block;
+            margin-right: 12px;
+            font-size: 20px;
+            font-weight: 300;
+            opacity: 0.4;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .dropdown-menu a:hover::before {
+            opacity: 0.8;
+            transform: translateX(4px);
+        }
+
+        /* ---------- 分割线 ---------- */
+        .bottom-divider {
+            width: 80%;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ccc, transparent);
+        }
+
+        /* ---------- 页脚：灰色背景 ---------- */
+        .footer {
+            width: 100%;
+            background: #e8eaed;
+            padding: 32px 30px 16px 30px;
+            margin-top: 0;
+        }
+
+        /* 四个卡片网格 */
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-item {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 18px 20px 16px 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: default;
+        }
+        .footer-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+        .footer-item h3 {
+            font-size: 17px;
+            margin-bottom: 6px;
+            color: #1a1a1a;
+        }
+        .footer-item p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .footer-item a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .footer-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* ---------- ★ 广告图片（已添加） ---------- */
+        .footer-ad {
+            max-width: 1200px;
+            margin: 30px auto 30px auto;
+            text-align: center;
+        }
+        .footer-ad img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        /* ---------- 底部导航（已删除“帮助文档”） ---------- */
+        .footer-nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 12px 24px;
+        }
+
+        .footer-nav a {
+            color: #444;
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+        .footer-nav a:hover {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+
+        .footer-nav .sep {
+            color: #bbb;
+            font-size: 13px;
+        }
+
+        .footer-nav .copy {
+            color: #888;
+            font-size: 13px;
+            margin-left: 4px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 640px) {
+            .menu-btn {
+                width: 38px;
+                height: 38px;
+                bottom: 12px;
+                right: 12px;
+                border-radius: 8px;
+            }
+            .menu-btn span {
+                width: 17px;
+                height: 2.2px;
+            }
+            .menu-btn span:nth-child(1) { top: 11px; }
+            .menu-btn span:nth-child(2) { top: 17.5px; }
+            .menu-btn span:nth-child(3) { top: 24px; }
+            .menu-btn.active span:nth-child(1),
+            .menu-btn.active span:nth-child(3) { top: 17.5px; }
+            .dropdown-menu a {
+                padding: 14px 18px;
+                font-size: 15px;
+            }
+            .dropdown-wrap.open { max-height: 500px; }
+            .bottom-divider { width: 90%; }
+
+            .footer {
+                padding: 20px 16px 12px 16px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .footer-item {
+                padding: 16px;
+            }
+            .footer-ad {
+                margin: 20px auto 20px auto;
+            }
+            .footer-nav {
+                gap: 8px 16px;
+                padding-top: 14px;
+            }
+            .footer-nav a,
+            .footer-nav .copy {
+                font-size: 12px;
+            }
+            .footer-nav .sep {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 图片 + 汉堡按钮 ===== -->
+    <div class="img-container">
+        <img src="./imagehero.jpg" alt="Hero大图" />
+
+        <div class="menu-wrap">
+            <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-label="切换导航">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== 下拉菜单 ===== -->
+    <div class="dropdown-wrap" id="dropdownWrap">
+        <nav class="dropdown-menu" id="dropdownMenu" role="navigation" aria-label="主导航">
+            <a href="index.html">首页</a>
+            <a href="login.html">注册账号</a>
+            <a href="qa.html">Q&A</a>
+            <a href="news.html">新闻发布</a>
+            <a href="contact.html">联系我们</a>
+        </nav>
+    </div>
+
+    <!-- ===== 分割线 ===== -->
+    <hr class="bottom-divider" />
+
+    <!-- ===== 页脚（灰色） ===== -->
+    <div class="footer">
+        <!-- 卡片 -->
+        <div class="footer-grid">
+            <div class="footer-item">
+                <h3>注册账号</h3>
+                <p>创建账户，答题并获得服务器白名单资格</p>
+                <a href="login.html">前往注册 →</a>
+            </div>
+            <div class="footer-item">
+                <h3>Q&A</h3>
+                <p>常见问题解答，快速解决您的疑惑。</p>
+                <a href="qa.html">查看问答 →</a>
+            </div>
+            <div class="footer-item">
+                <h3>新闻发布</h3>
+                <p>了解最新动态，掌握一手资讯。</p>
+                <a href="news.html">浏览新闻 →</a>
+            </div>
+            <div class="footer-item">
+                <h3>联系我们</h3>
+                <p>有任何问题，随时与我们取得联系。</p>
+                <a href="contact.html">联系通道 →</a>
+            </div>
+        </div>
+
+        <!-- ★ 广告图片（已放在卡片和导航之间） -->
+        <div class="footer-ad">
+            <img src="guanggao1.png" alt="广告" />
+            <!-- 请确保 guanggao1.png 与网页在同一目录，或修改 src 路径 -->
+        </div>
+
+        <!-- 底部导航（删除了“帮助文档”） -->
+        <div class="footer-nav">
+            <a href="about.html">关于我们</a>
+            <span class="sep">|</span>
+            <a href="terms.html">服务条款</a>
+            <span class="sep">|</span>
+            <a href="privacy.html">隐私政策</a>
+            <span class="sep">|</span>
+            <span class="copy">© 2025 MTR轨道交通服务器 · 用爱发电</span>
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script>
+        (function() {
+            const menuBtn = document.getElementById('menuBtn');
+            const dropdownWrap = document.getElementById('dropdownWrap');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            let isOpen = false;
+
+            function toggleMenu(open) {
+                const newState = (typeof open === 'boolean') ? open : !isOpen;
+                if (newState === isOpen) return;
+                isOpen = newState;
+                menuBtn.classList.toggle('active', isOpen);
+                dropdownWrap.classList.toggle('open', isOpen);
+                menuBtn.setAttribute('aria-expanded', isOpen);
+            }
+
+            menuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleMenu();
+            });
+
+            dropdownMenu.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (isOpen) toggleMenu(false);
+                });
+            });
+
+            document.addEventListener('click', function(e) {
+                if (isOpen) {
+                    const target = e.target;
+                    if (!dropdownWrap.contains(target) && !menuBtn.contains(target)) {
+                        toggleMenu(false);
+                    }
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && isOpen) {
+                    toggleMenu(false);
+                    menuBtn.focus();
+                }
+            });
+        })();
+    </script>
+
+</body>
+</html>
